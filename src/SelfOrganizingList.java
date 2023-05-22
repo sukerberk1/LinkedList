@@ -51,6 +51,9 @@ public class SelfOrganizingList<T> implements Iterable<T> {
                 // 2. set the pointer of previous node of the found one to the nodeToMove
                 nodeAprev.next = nodeToMove;
 
+                // resetTail function may be optimized to be called only when necessary.
+                // currently many operations are added that are not required in some cases
+                resetTail();
                 break;
             } else if (nodeToMove.numberOfUses > nodeA.numberOfUses){
                 // Handle the stance of moving the node to the very beginning explicitly, similarly as the above
@@ -83,19 +86,32 @@ public class SelfOrganizingList<T> implements Iterable<T> {
         return head;
     }
 
+    /** Function's purpose is to iterate over the list in search of the last element and set it as the tail*/
+    public void resetTail() {
+        Node<T> i = head;
+        while (i.next != null){
+            i = i.next;
+        }
+        this.tail = i;
+    }
+
     @Override
     public String toString() {
-        var toReturn = new StringBuilder("(");
+        var listString = new StringBuilder("(");
         var current = head;
         while (current != null) {
-            toReturn.append(current).append(", ");
+            listString.append(current).append(", ");
             current = current.next;
         }
         if (size > 0) {
-            var length = toReturn.length();
-            toReturn.delete(length - 2, length);
+            var length = listString.length();
+            listString.delete(length - 2, length);
         }
-        return toReturn.append(")").toString();
+        return listString.append(")\n")
+                .append("Head: ").append(head)
+                .append(" Tail:").append(tail)
+                .append(" Size:").append(size)
+                .append("\n").toString();
     }
 
     public Iterator<T> iterator() {
